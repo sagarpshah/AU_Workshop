@@ -162,6 +162,43 @@ NSString * const kSDSyncEngineSyncCompletedNotificationName = @"SDSyncEngineSync
     }
 }
 
+- (NSArray *)managedObjectsForClass:(NSString *)className withSyncStatus:(SDObjectSyncStatus)syncStatus
+{
+    __block NSArray *results = nil;
+    NSManagedObjectContext *managedObjectContext = [[SDCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:className];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"syncStatus = %d", syncStatus];
+    [fetchRequest setPredicate:predicate];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
+    
+    return results;
+}
+
+- (NSArray *)managedObjectsForClass:(NSString *)className sortedByKey:(NSString *)key usingArrayOfIds:(NSArray *)idArray inArrayOfIds:(BOOL)inIds
+{
+    __block NSArray *results = nil;
+    NSManagedObjectContext *managedObjectContext = [[SDCoreDataController sharedInstance] backgroundManagedObjectContext];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:className];
+    NSPredicate *predicate;
+    if (inIds) {
+        predicate = [NSPredicate predicateWithFormat:@"objectId IN %@", idArray];
+    } else {
+        predicate = [NSPredicate predicateWithFormat:@"NOT (objectId IN %@)", idArray];
+    }
+    
+    [fetchRequest setPredicate:predicate];
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"objectId" ascending:YES]]];
+    [managedObjectContext performBlockAndWait:^{
+        NSError *error = nil;
+        results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];
+    
+    return results;
+}
+
 - (void)downloadDataForRegisteredObjects:(BOOL)useUpdatedAtDate
 {
     NSMutableArray *operations = [NSMutableArray array];

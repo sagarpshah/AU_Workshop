@@ -38,4 +38,12 @@ If the key is equal to createdDate or updatedAt, you will be converting them to 
 accepts a className and a record, using this information it will create a new NSManagedObject in the backgroundManagedObjectContext.\
 \
 14) - (void)updateManagedObject:(NSManagedObject *)managedObject withRecord:(NSDictionary *)record\
-accepts an NSManagedObject and a record, using this information it will update the passed NSManagedObject with the record information in the backgroundManagedObjectContext.}
+accepts an NSManagedObject and a record, using this information it will update the passed NSManagedObject with the record information in the backgroundManagedObjectContext.\
+\
+15) - (NSArray *)managedObjectsForClass:(NSString *)className withSyncStatus:(SDObjectSyncStatus)syncStatus\
+returns an NSArray of NSManagedObjects for the specified className where their syncStatus is set to the specified status.\
+\
+16) - (NSArray *)managedObjectsForClass:(NSString *)className sortedByKey:(NSString *)key usingArrayOfIds:(NSArray *)idArray inArrayOfIds:(BOOL)inIds\
+returns an NSArray of NSManagedObjects for the specified className, sorted by key, using an array of objectIds, and you can tell the method to return NSManagedObjects whose objectIds match those in the passed array or those who do not match those in the array.\
+\
+17) Confusing! Movie is still on my friend.}
