@@ -1,0 +1,28 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf210
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 1) Add SDSyncEngine which will manage all of the synchronisation routines between Core Data and your remote service (Parse).\
+\
+2) NSManagedObject sub-classes are registered with SDSyncEngine. The sync engine will then handle the necessary process to take data from Parse.com and save it to Core Data.\
+\
+3) - (void)registerNSManagedObjectClassToSync:(Class)aClass\
+takes in a Class, initialises the registeredClassesToSync property (if it is not already), verifies that the object is a subclass of NSManagedObject, and, if so, adds it to the registeredClassesToSync array.\
+\
+4) Sync efficiently - Delta Sync - only give me the new stuff, I don\'92t care about what I already know.\
+\
+5) Sync process will be accomplished by looking at the \'93updatedAt\'94 attribute on your Entities and determining which one is the most recent. This date will then be used to ask the remote service to only return records who were modified after this date.\
+\
+6) - (NSDate *)mostRecentUpdatedAtDateForEntityWithName:(NSString *)entityName\
+Returns the \'93most recent last modified date\'94 for a specific entity.\
+\
+7) #import "SDAFParseAPIClient.h" & #import "AFHTTPRequestOperation.h"\
+\
+8) - (void)downloadDataForRegisteredObjects:(BOOL)useUpdatedAtDate\
+iterates over every registered class, creates NSMutableURLRequests for each, uses those requests to create AFHTTPRequestOperations, and finally at long last passes those operations off to the -enqueueBatchOfHTTPRequestOperations:progressBlock:completionBlock method of SDAFParseAPIClient.\
+\
+9) Take a look at Comment 1 & Comment 2. In step-4 we will add a method in comment 1 block that takes the response received from the remote service and saves it to disk. In Comment 2 the block will be called when all operations have completed. In step-4 we will add a method here that takes the responses saved to disk and processes them into Core Data.\
+\
+10) }
